@@ -73,46 +73,54 @@ fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
 
 fn main() {
     let (n, w, k, _c, wsrc, house) = input();
-    let mut dist = vec![1e9 as i32; k as usize];
-    let mut wsrc4house = vec![!0; k as usize];
-    for i in 0..k as usize {
-        for j in 0..w as usize {
-            let tmpdist = (house[i].0 - wsrc[j].0).abs() + (house[i].1 - wsrc[j].1).abs();
-            if dist[i] > tmpdist {
-                dist[i] = tmpdist;
-                wsrc4house[i] = j as u32;
-            }
-        }
-    }
     let mut is_broken = vec![vec![false; n as usize]; n as usize];
+
+    let mut p = (0..k).collect::<Vec<u32>>();
+    p.sort_by(|a, b| {
+        let neara = (0..w as usize)
+            .map(|i| house[*a as usize].dist(&wsrc[i]))
+            .min()
+            .unwrap();
+        let nearb = (0..w as usize)
+            .map(|i| house[*b as usize].dist(&wsrc[i]))
+            .min()
+            .unwrap();
+        neara.cmp(&nearb)
+    });
+
     // まず縦いって横行く
-    for i in 0..k as usize {
-        let mut x = house[i].0;
-        let mut y = house[i].1;
-        let j = wsrc4house[i];
-        eprintln!("doing house{}: ({}, {}), wsrc:{}", i, x, y, j);
-        while x != wsrc[j as usize].0 {
+    for _i in 0..k {
+        let i = p[_i as usize] as usize;
+        eprintln!("{}: {} {}", i, house[i].x, house[i].y);
+        let mut nearest = wsrc[0];
+        for j in 1..(w + _i) as usize {
+            if j >= w as usize {
+                let dist = house[i].dist(&house[p[j - w as usize] as usize]);
+                if house[i].dist(&nearest) > dist {
+                    nearest = house[p[j - w as usize] as usize];
+                }
+            } else {
+                let dist = house[i].dist(&wsrc[j]);
+                if house[i].dist(&nearest) > dist {
+                    nearest = wsrc[j];
+                }
+            }
+        }
+
+        let mut x = house[i].x;
+        let mut y = house[i].y;
+        while x != nearest.x {
             if !is_broken[x as usize][y as usize] {
                 is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
             }
-            if x < wsrc[j as usize].0 {
-                x += 1;
-            } else {
-                x -= 1;
-            }
+            x += if x < nearest.x { 1 } else { -1 };
         }
-        eprintln!("x done");
-        while y != wsrc[j as usize].1 {
+        while y != nearest.y {
             if !is_broken[x as usize][y as usize] {
                 is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
             }
-            if y < wsrc[j as usize].1 {
-                y += 1;
-            } else {
-                y -= 1;
-            }
+            y += if y < nearest.y { 1 } else { -1 };
         }
-        eprintln!("y done");
         if !is_broken[x as usize][y as usize] {
             is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
         }

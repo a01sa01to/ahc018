@@ -1,0 +1,15 @@
+--- Submission 1 ---
+まずフルパワーで家から一番近い水源に伸ばす。縦に伸ばして、横に伸ばす -> 122,175,793
+Local Score
+  Average Score: 2614585.58
+  Minimum Score: 441408.00 on 20
+  Maximum Score: 5471576.00 on 40
+  Standard Deviation: 1071506.39
+
+--- Submission 2 ---
+水源に近い順につなげていく。すでに通した家or水源のうち、一番近い所に伸ばす -> 104,020,592
+Local Score
+  Average Score: 2162998.51
+  Minimum Score: 441408.00 on 20
+  Maximum Score: 3367560.00 on 73
+  Standard Deviation: 712196.40
