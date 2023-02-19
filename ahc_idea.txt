@@ -37,3 +37,11 @@ Local Score
   Minimum Score: 76140.00 on 3
   Maximum Score: 768108.00 on 68
   Standard Deviation: 161424.46
+
+--- Submission 6 ---
+パワーを max(C, 64) に設定してみる。64でも約3割強が1発で壊せるっぽいので -> 14,299,456
+Local Score
+  Average Score: 320540.18
+  Minimum Score: 32708.00 on 54
+  Maximum Score: 759744.00 on 68
+  Standard Deviation: 193206.38

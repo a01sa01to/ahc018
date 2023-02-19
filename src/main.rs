@@ -5,7 +5,6 @@ use std::{
     process,
 };
 
-const POWER: u32 = 234;
 // const DX: [i32; 4] = [0, 1, 0, -1];
 // const DY: [i32; 4] = [1, 0, -1, 0];
 
@@ -79,7 +78,8 @@ fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
 }
 
 fn main() {
-    let (n, w, k, _c, wsrc, house) = input();
+    let (n, w, k, c, wsrc, house) = input();
+    let power = 64.max(c);
     let in_range = |x: i32, y: i32| -> bool { x >= 0 && x < n as i32 && y >= 0 && y < n as i32 };
 
     let mut is_broken = vec![vec![false; n as usize]; n as usize];
@@ -116,7 +116,7 @@ fn main() {
 
         while x != nearest.x && !skip {
             if !is_broken[x as usize][y as usize] {
-                is_broken[x as usize][y as usize] = query(x, y, POWER);
+                is_broken[x as usize][y as usize] = query(x, y, power);
             }
             for d in 0..2 {
                 let ny = y + 1 - (2 * d);
@@ -129,7 +129,7 @@ fn main() {
         }
         while y != nearest.y && !skip {
             if !is_broken[x as usize][y as usize] {
-                is_broken[x as usize][y as usize] = query(x, y, POWER);
+                is_broken[x as usize][y as usize] = query(x, y, power);
             }
             y += if y < nearest.y { 1 } else { -1 };
             for d in 0..2 {
@@ -141,7 +141,7 @@ fn main() {
             }
         }
         if !is_broken[x as usize][y as usize] && !skip {
-            is_broken[x as usize][y as usize] = query(x, y, POWER);
+            is_broken[x as usize][y as usize] = query(x, y, power);
         }
 
         for j in 0..k {
