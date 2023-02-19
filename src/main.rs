@@ -17,6 +17,27 @@ fn query(x: i32, y: i32, p: u32) -> bool {
     res == 1
 }
 
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl Point {
+    fn new(x: i32, y: i32) -> Point {
+        Point { x, y }
+    }
+    fn dist(&self, other: &Point) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+}
+
+impl Copy for Point {}
+impl Clone for Point {
+    fn clone(&self) -> Point {
+        Point::new(self.x, self.y)
+    }
+}
+
 fn main() {
     let (n, w, k, _c) = {
         let mut input = String::new();
