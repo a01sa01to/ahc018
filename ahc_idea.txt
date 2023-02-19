@@ -45,3 +45,11 @@ Local Score
   Minimum Score: 32708.00 on 54
   Maximum Score: 759744.00 on 68
   Standard Deviation: 193206.38
+
+--- Submission 7 ---
+なるべく頑丈さが大きい部分は通らないようにする。DFSとダイクストラを使う -> 9,198,259
+Local Score
+  Average Score: 217913.38
+  Minimum Score: 38208.00 on 39
+  Maximum Score: 742144.00 on 29
+  Standard Deviation: 120268.88
