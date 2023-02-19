@@ -5,7 +5,7 @@ use std::{
     process,
 };
 
-const MAX_POWER: u32 = 5000;
+const POWER: u32 = 234;
 
 fn query(x: i32, y: i32, p: u32) -> bool {
     println!("{} {} {}", x, y, p);
@@ -16,7 +16,10 @@ fn query(x: i32, y: i32, p: u32) -> bool {
     if res == -1 || res == 2 {
         process::exit(0);
     }
-    res == 1
+    if res != 1 {
+        return query(x, y, p);
+    }
+    true
 }
 
 struct Point {
@@ -108,18 +111,18 @@ fn main() {
 
         while x != nearest.x {
             if !is_broken[x as usize][y as usize] {
-                is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
+                is_broken[x as usize][y as usize] = query(x, y, POWER);
             }
             x += if x < nearest.x { 1 } else { -1 };
         }
         while y != nearest.y {
             if !is_broken[x as usize][y as usize] {
-                is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
+                is_broken[x as usize][y as usize] = query(x, y, POWER);
             }
             y += if y < nearest.y { 1 } else { -1 };
         }
         if !is_broken[x as usize][y as usize] {
-            is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
+            is_broken[x as usize][y as usize] = query(x, y, POWER);
         }
 
         for j in 0..k {

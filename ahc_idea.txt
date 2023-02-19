@@ -21,3 +21,11 @@ Local Score
   Minimum Score: 441408.00 on 20
   Maximum Score: 3235896.00 on 73
   Standard Deviation: 674350.30
+
+--- Submission 4 ---
+パワーを234に設定する。この値は岩盤の頑丈さの中央値。 -> 14,681,473
+Local Score
+  Average Score: 323684.93
+  Minimum Score: 76140.00 on 3
+  Maximum Score: 768108.00 on 68
+  Standard Deviation: 161618.42
