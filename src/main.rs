@@ -6,6 +6,8 @@ use std::{
 };
 
 const POWER: u32 = 234;
+// const DX: [i32; 4] = [0, 1, 0, -1];
+// const DY: [i32; 4] = [1, 0, -1, 0];
 
 fn query(x: i32, y: i32, p: u32) -> bool {
     println!("{} {} {}", x, y, p);
@@ -78,6 +80,8 @@ fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
 
 fn main() {
     let (n, w, k, _c, wsrc, house) = input();
+    let in_range = |x: i32, y: i32| -> bool { x >= 0 && x < n as i32 && y >= 0 && y < n as i32 };
+
     let mut is_broken = vec![vec![false; n as usize]; n as usize];
 
     let mut pq = BinaryHeap::<Reverse<(i32, u32, u32)>>::new();
@@ -108,20 +112,35 @@ fn main() {
         if is_broken[x as usize][y as usize] {
             continue;
         }
+        let mut skip = false;
 
-        while x != nearest.x {
+        while x != nearest.x && !skip {
             if !is_broken[x as usize][y as usize] {
                 is_broken[x as usize][y as usize] = query(x, y, POWER);
             }
+            for d in 0..2 {
+                let ny = y + 1 - (2 * d);
+                if in_range(x, ny) && is_broken[x as usize][ny as usize] {
+                    skip = true;
+                    break;
+                }
+            }
             x += if x < nearest.x { 1 } else { -1 };
         }
-        while y != nearest.y {
+        while y != nearest.y && !skip {
             if !is_broken[x as usize][y as usize] {
                 is_broken[x as usize][y as usize] = query(x, y, POWER);
             }
             y += if y < nearest.y { 1 } else { -1 };
+            for d in 0..2 {
+                let nx = x + 1 - (2 * d);
+                if in_range(nx, y) && is_broken[nx as usize][y as usize] {
+                    skip = true;
+                    break;
+                }
+            }
         }
-        if !is_broken[x as usize][y as usize] {
+        if !is_broken[x as usize][y as usize] && !skip {
             is_broken[x as usize][y as usize] = query(x, y, POWER);
         }
 

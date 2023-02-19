@@ -29,3 +29,11 @@ Local Score
   Minimum Score: 76140.00 on 3
   Maximum Score: 768108.00 on 68
   Standard Deviation: 161618.42
+
+--- Submission 5 ---
+上下左右にすでに水路があるなら打ち切る -> 14,638,120
+Local Score
+  Average Score: 323134.77
+  Minimum Score: 76140.00 on 3
+  Maximum Score: 768108.00 on 68
+  Standard Deviation: 161424.46
