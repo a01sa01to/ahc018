@@ -13,3 +13,11 @@ Local Score
   Minimum Score: 441408.00 on 20
   Maximum Score: 3367560.00 on 73
   Standard Deviation: 712196.40
+
+--- Submission 3 ---
+すでに通した家or水源に近い順につなげていく。 -> 102,759,315
+Local Score
+  Average Score: 2112404.47
+  Minimum Score: 441408.00 on 20
+  Maximum Score: 3235896.00 on 73
+  Standard Deviation: 674350.30

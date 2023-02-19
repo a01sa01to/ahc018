@@ -1,4 +1,6 @@
 use std::{
+    cmp::Reverse,
+    collections::BinaryHeap,
     io::{self, Write},
     process,
 };
@@ -75,40 +77,35 @@ fn main() {
     let (n, w, k, _c, wsrc, house) = input();
     let mut is_broken = vec![vec![false; n as usize]; n as usize];
 
-    let mut p = (0..k).collect::<Vec<u32>>();
-    p.sort_by(|a, b| {
-        let neara = (0..w as usize)
-            .map(|i| house[*a as usize].dist(&wsrc[i]))
-            .min()
-            .unwrap();
-        let nearb = (0..w as usize)
-            .map(|i| house[*b as usize].dist(&wsrc[i]))
-            .min()
-            .unwrap();
-        neara.cmp(&nearb)
-    });
-
-    // まず縦いって横行く
-    for _i in 0..k {
-        let i = p[_i as usize] as usize;
-        eprintln!("{}: {} {}", i, house[i].x, house[i].y);
-        let mut nearest = wsrc[0];
-        for j in 1..(w + _i) as usize {
-            if j >= w as usize {
-                let dist = house[i].dist(&house[p[j - w as usize] as usize]);
-                if house[i].dist(&nearest) > dist {
-                    nearest = house[p[j - w as usize] as usize];
-                }
-            } else {
-                let dist = house[i].dist(&wsrc[j]);
-                if house[i].dist(&nearest) > dist {
-                    nearest = wsrc[j];
-                }
+    let mut pq = BinaryHeap::<Reverse<(i32, u32, u32)>>::new();
+    for i in 0..k {
+        let mut nearest = 0u32;
+        for j in 1..w {
+            let dist = house[i as usize].dist(&wsrc[j as usize]);
+            if house[i as usize].dist(&wsrc[nearest as usize]) > dist {
+                nearest = j;
             }
         }
+        pq.push(Reverse((
+            house[i as usize].dist(&wsrc[nearest as usize]),
+            i,
+            nearest,
+        )));
+    }
 
-        let mut x = house[i].x;
-        let mut y = house[i].y;
+    while let Some(Reverse((_, i, nearest_idx))) = pq.pop() {
+        let nearest = if nearest_idx < w {
+            wsrc[nearest_idx as usize]
+        } else {
+            house[(nearest_idx - w) as usize]
+        };
+
+        let mut x = house[i as usize].x;
+        let mut y = house[i as usize].y;
+        if is_broken[x as usize][y as usize] {
+            continue;
+        }
+
         while x != nearest.x {
             if !is_broken[x as usize][y as usize] {
                 is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
@@ -124,6 +121,18 @@ fn main() {
         if !is_broken[x as usize][y as usize] {
             is_broken[x as usize][y as usize] = query(x, y, MAX_POWER);
         }
+
+        for j in 0..k {
+            if i == j {
+                continue;
+            }
+            let h = house[j as usize];
+            if is_broken[h.x as usize][h.y as usize] {
+                continue;
+            }
+            let dist = house[i as usize].dist(&house[j as usize]);
+            pq.push(Reverse((dist, j, w + i)));
+        }
     }
-    assert_eq!(true, false);
+    assert!(false);
 }
