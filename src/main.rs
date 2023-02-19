@@ -1,6 +1,7 @@
 use std::{
     cmp::Reverse,
     collections::BinaryHeap,
+    fmt::{Debug, Formatter},
     io::{self, Write},
     process,
 };
@@ -40,13 +41,26 @@ impl Point {
         ((self.x - other.x).pow(2) + (self.y - other.y).pow(2)) as i64
     }
 }
+impl Debug for Dir {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Dir::None => write!(f, "None"),
+            Dir::Up => write!(f, "Up"),
+            Dir::Left => write!(f, "Left"),
+            Dir::Down => write!(f, "Down"),
+            Dir::Right => write!(f, "Right"),
+        }
+    }
+}
 
 // ---------- Constants ---------- //
-const DX: [i32; 4] = [0, 1, 0, -1];
-const DY: [i32; 4] = [1, 0, -1, 0];
+const DX: [i32; 4] = [-1, 0, 1, 0];
+const DY: [i32; 4] = [0, -1, 0, 1];
+const DX_8: [i32; 8] = [0, 1, 1, 1, 0, -1, -1, -1];
+const DY_8: [i32; 8] = [1, 1, 0, -1, -1, -1, 0, 1];
 const N: u32 = 200;
 const POWER: u32 = 128;
-const DFS_WIDTH: i32 = 15;
+const DFS_WIDTH: i32 = 10;
 const BREAK_AC: i32 = 3;
 const NEAR_AC: i32 = 15;
 
@@ -101,22 +115,23 @@ fn connect_greedy(
 ) {
     let mut x = src.x;
     let mut y = src.y;
-    while x != target.x {
-        if x < target.x {
-            query_until_broken(x, y, POWER, bedrock, nxt_state);
-            x += 1;
+    while x != target.x || y != target.y {
+        if (x - target.x).abs() > (y - target.y).abs() {
+            if x < target.x {
+                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                x += 1;
+            } else {
+                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                x -= 1;
+            }
         } else {
-            query_until_broken(x, y, POWER, bedrock, nxt_state);
-            x -= 1;
-        }
-    }
-    while y != target.y {
-        if y < target.y {
-            query_until_broken(x, y, POWER, bedrock, nxt_state);
-            y += 1;
-        } else {
-            query_until_broken(x, y, POWER, bedrock, nxt_state);
-            y -= 1;
+            if y < target.y {
+                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                y += 1;
+            } else {
+                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                y -= 1;
+            }
         }
     }
     query_until_broken(target.x, target.y, POWER, bedrock, nxt_state);
@@ -134,13 +149,18 @@ fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)
         if dst > dist[now.x as usize][now.y as usize].0 {
             continue;
         }
-        for i in 0..4 {
-            let nx = now.x + DFS_WIDTH * DX[i];
-            let ny = now.y + DFS_WIDTH * DY[i];
+        for i in 0..8 {
+            let nx = now.x + DFS_WIDTH * DX_8[i];
+            let ny = now.y + DFS_WIDTH * DY_8[i];
             if !in_range(nx, ny) {
                 continue;
             }
-            let ndst = dst + bedrock[nx as usize][ny as usize].1;
+            let mag = if DX_8[i].abs() + DY_8[i].abs() > 1 {
+                3
+            } else {
+                1
+            };
+            let ndst = dst + (bedrock[nx as usize][ny as usize].1) * mag;
             if bedrock[nx as usize][ny as usize].0 != RockState::Broken
                 && bedrock[nx as usize][ny as usize].0 != RockState::Flowing
             {
@@ -173,10 +193,6 @@ fn dfs(
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     visited: &mut Vec<Vec<bool>>,
 ) -> bool {
-    println!(
-        "# Now: ({}, {}), Target: ({}, {})",
-        now.x, now.y, target.x, target.y
-    );
     visited[now.x as usize][now.y as usize] = true;
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
         return true;
@@ -193,32 +209,45 @@ fn dfs(
     if (now.x - target.x).abs() > (now.y - target.y).abs() {
         if now.x > target.x {
             if now.y > target.y {
-                priority_dir = [Dir::Down, Dir::Left, Dir::Right, Dir::Up];
-            } else {
-                priority_dir = [Dir::Down, Dir::Right, Dir::Left, Dir::Up];
-            }
-        } else {
-            if now.y > target.y {
                 priority_dir = [Dir::Up, Dir::Left, Dir::Right, Dir::Down];
             } else {
                 priority_dir = [Dir::Up, Dir::Right, Dir::Left, Dir::Down];
+            }
+        } else {
+            if now.y > target.y {
+                priority_dir = [Dir::Down, Dir::Left, Dir::Right, Dir::Up];
+            } else {
+                priority_dir = [Dir::Down, Dir::Right, Dir::Left, Dir::Up];
             }
         }
     } else {
         if now.y > target.y {
             if now.x > target.x {
-                priority_dir = [Dir::Right, Dir::Down, Dir::Up, Dir::Left];
+                priority_dir = [Dir::Left, Dir::Up, Dir::Down, Dir::Right];
             } else {
-                priority_dir = [Dir::Right, Dir::Up, Dir::Down, Dir::Left];
+                priority_dir = [Dir::Left, Dir::Down, Dir::Up, Dir::Right];
             }
         } else {
             if now.x > target.x {
-                priority_dir = [Dir::Left, Dir::Down, Dir::Up, Dir::Right];
+                priority_dir = [Dir::Right, Dir::Up, Dir::Down, Dir::Left];
             } else {
-                priority_dir = [Dir::Left, Dir::Up, Dir::Down, Dir::Right];
+                priority_dir = [Dir::Right, Dir::Down, Dir::Up, Dir::Left];
             }
         }
     }
+    println!(
+        "# Source: ({}, {}), Now: ({}, {}), Target: ({}, {}), Priority: [{:?}, {:?}, {:?}, {:?}]",
+        src.x,
+        src.y,
+        now.x,
+        now.y,
+        target.x,
+        target.y,
+        priority_dir[0],
+        priority_dir[1],
+        priority_dir[2],
+        priority_dir[3]
+    );
 
     for dir in 0..4 {
         let nxt_dir = priority_dir[dir];
