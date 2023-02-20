@@ -1,3 +1,6 @@
+extern crate rand;
+
+use rand::Rng;
 use std::{
     cmp::Reverse,
     collections::BinaryHeap,
@@ -193,6 +196,8 @@ fn dfs(
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     visited: &mut Vec<Vec<bool>>,
 ) -> bool {
+    let mut rng = rand::thread_rng();
+
     visited[now.x as usize][now.y as usize] = true;
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
         return true;
@@ -202,7 +207,9 @@ fn dfs(
         connect_bfs(src, now, bedrock);
         return true;
     }
-    if now.edist(&target) > upper_dist {
+    let rnddst = (src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt() / 4.0;
+    println!("# Source: ({}, {}), Target: ({}, {}), Now: ({}, {}), Dist now: {}, Dist target: {}, rnddst: {}, Exp: {}", src.x, src.y, target.x, target.y, now.x, now.y, now.edist(&target), src.edist(&target), rnddst, rnddst.exp());
+    if rnddst.exp() < rng.gen::<f64>() {
         return false;
     }
     let priority_dir: [Dir; 4];
