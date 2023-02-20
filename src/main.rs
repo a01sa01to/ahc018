@@ -207,9 +207,10 @@ fn dfs(
         connect_bfs(src, now, bedrock);
         return true;
     }
-    let rnddst = (src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt() / 4.0;
+    let rnddst = ((src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt()) / 4.0;
+    let rnddst2 = ((target.edist(&src) as f64).sqrt() - (now.edist(&src) as f64).sqrt()) / 16.0;
     println!("# Source: ({}, {}), Target: ({}, {}), Now: ({}, {}), Dist now: {}, Dist target: {}, rnddst: {}, Exp: {}", src.x, src.y, target.x, target.y, now.x, now.y, now.edist(&target), src.edist(&target), rnddst, rnddst.exp());
-    if rnddst.exp() < rng.gen::<f64>() {
+    if rnddst.exp() < rng.gen::<f64>() || rnddst2.exp() < rng.gen::<f64>() {
         return false;
     }
     let priority_dir: [Dir; 4];

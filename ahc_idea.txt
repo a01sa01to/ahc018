@@ -73,7 +73,15 @@ Local Score
 --- Submission 10 ---
 目標点からの距離に応じてDFSを途中で諦める -> 8,005,622
 Local Score
-  Average Score: 198113.24
-  Minimum Score: 29952.00 on 20
-  Maximum Score: 930304.00 on 29
-  Standard Deviation: 140736.32
+  Average Score: 175871.55
+  Minimum Score: 29808.00 on 20
+  Maximum Score: 652032.00 on 29
+  Standard Deviation: 111581.36
+
+--- Submission 11 ---
+目標点からの距離に加えて、スタート地点からの距離にも応じてDFSを諦める -> 8,448,120
+Local Score
+  Average Score: 181017.90
+  Minimum Score: 29808.00 on 20
+  Maximum Score: 655616.00 on 29
+  Standard Deviation: 117638.25
