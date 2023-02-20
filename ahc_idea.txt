@@ -55,9 +55,17 @@ Local Score
   Standard Deviation: 120268.88
 
 --- Submission 8 ---
-DFSの幅を変更。探索順序の修正。斜め移動も可能にした -> 8,026,170
+DFSの幅を8に変更。探索順序の修正。斜め移動も可能にした -> 8,026,170
 Local Score
   Average Score: 193473.17
   Minimum Score: 28368.00 on 20
   Maximum Score: 753408.00 on 29
   Standard Deviation: 124211.22
+
+--- Submission 9 ---
+DFS幅を12に変更しただけ -> 7,715,157
+Local Score
+  Average Score: 182434.93
+  Minimum Score: 29952.00 on 20
+  Maximum Score: 796672.00 on 29
+  Standard Deviation: 120029.00

@@ -60,7 +60,7 @@ const DX_8: [i32; 8] = [0, 1, 1, 1, 0, -1, -1, -1];
 const DY_8: [i32; 8] = [1, 1, 0, -1, -1, -1, 0, 1];
 const N: u32 = 200;
 const POWER: u32 = 128;
-const DFS_WIDTH: i32 = 10;
+const DFS_WIDTH: i32 = 12;
 const BREAK_AC: i32 = 3;
 const NEAR_AC: i32 = 15;
 
