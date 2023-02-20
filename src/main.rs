@@ -192,7 +192,8 @@ fn dfs(
     prev_dir: Dir,
     src: Point,
     target: Point,
-    upper_dist: i64,
+    wsrc: &Vec<Point>,
+    house: &Vec<Point>,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     visited: &mut Vec<Vec<bool>>,
 ) -> bool {
@@ -256,6 +257,25 @@ fn dfs(
         priority_dir[3]
     );
 
+    let mut new_target = wsrc[0];
+    for i in 1..wsrc.len() {
+        if now.edist(&wsrc[i]) < now.edist(&new_target) {
+            new_target = wsrc[i];
+        }
+    }
+    for i in 0..house.len() {
+        let h = house[i];
+        if bedrock[h.x as usize][h.y as usize].0 == RockState::Flowing {
+            if now.edist(&h) < now.edist(&new_target) {
+                new_target = h;
+            }
+        }
+    }
+    println!(
+        "# Prev Target: ({}, {}), New Target: ({}, {})",
+        target.x, target.y, new_target.x, new_target.y
+    );
+
     for dir in 0..4 {
         let nxt_dir = priority_dir[dir];
         if nxt_dir as i32 % 2 == prev_dir as i32 % 2 && nxt_dir != prev_dir {
@@ -298,8 +318,9 @@ fn dfs(
                     Point::new(nx, ny),
                     nxt_dir,
                     src,
-                    target,
-                    upper_dist,
+                    new_target,
+                    wsrc,
+                    house,
                     bedrock,
                     visited,
                 );
@@ -411,7 +432,8 @@ fn main() {
             Dir::None,
             h,
             nearest,
-            house[i as usize].edist(&nearest) * 2 as i64,
+            &wsrc,
+            &house,
             &mut bedrock,
             &mut visited,
         ) {
