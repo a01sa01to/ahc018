@@ -93,3 +93,11 @@ Local Score
   Minimum Score: 29808.00 on 20
   Maximum Score: 708352.00 on 29
   Standard Deviation: 103273.52
+
+--- Submission 13 ---
+近くに水路が引かれている場合、家・水源からではなくそこから引く -> 6,988,742
+Local Score
+  Average Score: 159619.52
+  Minimum Score: 28800.00 on 20
+  Maximum Score: 644096.00 on 29
+  Standard Deviation: 97959.55

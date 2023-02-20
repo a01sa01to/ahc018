@@ -66,6 +66,7 @@ const POWER: u32 = 128;
 const DFS_WIDTH: i32 = 12;
 const BREAK_AC: i32 = 3;
 const NEAR_AC: i32 = 15;
+const FLOWING_AC: i32 = 12;
 
 // ---------- Functions ---------- //
 fn in_range(x: i32, y: i32) -> bool {
@@ -208,6 +209,24 @@ fn dfs(
         connect_bfs(src, now, bedrock);
         return true;
     }
+
+    for di in 0..FLOWING_AC {
+        for dx in -FLOWING_AC..FLOWING_AC {
+            for dy in -FLOWING_AC..FLOWING_AC {
+                if dx.abs() + dy.abs() > di {
+                    continue;
+                }
+                let nx = now.x + dx;
+                let ny = now.y + dy;
+                if in_range(nx, ny) && bedrock[nx as usize][ny as usize].0 == RockState::Flowing {
+                    connect_greedy(now, Point::new(nx, ny), bedrock, RockState::Flowing);
+                    connect_bfs(src, now, bedrock);
+                    return true;
+                }
+            }
+        }
+    }
+
     let rnddst = ((src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt()) / 4.0;
     println!("# Source: ({}, {}), Target: ({}, {}), Now: ({}, {}), Dist now: {}, Dist target: {}, rnddst: {}, Exp: {}", src.x, src.y, target.x, target.y, now.x, now.y, now.edist(&target), src.edist(&target), rnddst, rnddst.exp());
     if rnddst.exp() < rng.gen::<f64>() {
@@ -296,24 +315,6 @@ fn dfs(
                 }
             }
             if is_broken_tmp {
-                for dx in -3..3 {
-                    for dy in -3..3 {
-                        let nnx = nx + dx;
-                        let nny = ny + dy;
-                        if in_range(nnx, nny)
-                            && bedrock[nnx as usize][nny as usize].0 == RockState::Flowing
-                        {
-                            connect_greedy(
-                                Point::new(nx, ny),
-                                Point::new(nnx, nny),
-                                bedrock,
-                                RockState::Flowing,
-                            );
-                            connect_bfs(src, Point::new(nx, ny), bedrock);
-                            return true;
-                        }
-                    }
-                }
                 let connected = dfs(
                     Point::new(nx, ny),
                     nxt_dir,
@@ -392,31 +393,6 @@ fn main() {
         if bedrock[h.x as usize][h.y as usize].0 == RockState::Flowing {
             continue;
         }
-
-        let mut should_skip = false;
-        for dx in -3..3 {
-            for dy in -3..3 {
-                let nx = h.x + dx;
-                let ny = h.y + dy;
-                if in_range(nx, ny) && bedrock[nx as usize][ny as usize].0 == RockState::Flowing {
-                    connect_greedy(
-                        Point::new(h.x, h.y),
-                        Point::new(nx, ny),
-                        &mut bedrock,
-                        RockState::Flowing,
-                    );
-                    should_skip = true;
-                    break;
-                }
-            }
-            if should_skip {
-                break;
-            }
-        }
-        if should_skip {
-            continue;
-        }
-
         let nearest = if nearest_idx < w {
             wsrc[nearest_idx as usize]
         } else {
