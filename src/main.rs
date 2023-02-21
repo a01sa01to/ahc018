@@ -69,11 +69,34 @@ const DY: [i32; 4] = [0, -1, 0, 1];
 const DX_8: [i32; 8] = [0, 1, 1, 1, 0, -1, -1, -1];
 const DY_8: [i32; 8] = [1, 1, 0, -1, -1, -1, 0, 1];
 const N: u32 = 200;
+
+// ヤー！パワー！！
+//
+// 　　　　ノ从从从ヽ
+// 　　　 /ミミ 彡彡∧
+// 　　　｜／￣￣￣＼｜
+// 　　　 Y　==　==　Y
+// 　　　(|　ヽ〉ノ　|)
+// 　　　 ( 　 |　　 )
+// 　　　 ｜ ﾉヽノヽ｜
+// 　　　／＼((￣)/／
+// 　　／ ＼ ヽ二ノ＼
+// 　／⌒＼ ＼　　 | ヽ
+// `/　　　ヽ ＼＿ノ　|
+// ｜　　　 |　　　_　|
+// ｜　　　ノ　　 へヽ|
+// ｜　　　)ノ　 / 三|
+// ｜　　／￣￣￣　_ノ
+// 人　　　　　　／
+// 　＼＿＿＿＿／
+//
 const POWER: u32 = 128;
-const DFS_WIDTH: i32 = 12;
-const BREAK_AC: i32 = 3;
-const NEAR_AC: i32 = 15;
-const FLOWING_AC: i32 = 12;
+
+const DFS_WIDTH: i32 = 12; // DFSで探索する間隔幅
+const BREAK_AC_INIT: i32 = 3; // 1探索で壊す上限回数
+const NEAR_AC: i32 = 15; // 目標地点の近づき度
+const FLOWING_AC: i32 = 12; // 流れている岩盤の近づき度
+const BROKEN_AC: i32 = 8; // 近くに壊されている岩盤があった時の許容度
 
 // ---------- Functions ---------- //
 fn in_range(x: i32, y: i32) -> bool {
@@ -214,6 +237,7 @@ fn dfs(
     prev_dir: Dir,
     src: Point,
     target: Point,
+    break_ac: i32,
     wsrc: &Vec<Point>,
     house: &Vec<Point>,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
@@ -224,6 +248,11 @@ fn dfs(
     visited[now.x as usize][now.y as usize] = true;
     // すでに流れている場合はそこからつなげられる
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
+        connect_bfs(src, now, bedrock);
+        println!(
+            "# Done: from:({},{}) to:({},{})",
+            src.x, src.y, now.x, now.y
+        );
         return true;
     }
     // 近くまで行ったらつなげる
@@ -333,9 +362,10 @@ fn dfs(
             if visited[nx as usize][ny as usize] {
                 continue;
             }
-            let mut is_broken_tmp = false;
+            let mut is_broken_tmp = bedrock[nx as usize][ny as usize].0 == RockState::Broken
+                || bedrock[nx as usize][ny as usize].0 == RockState::Flowing;
             // 1回の上限を決めて掘る
-            for _ in 0..BREAK_AC {
+            for _ in 0..break_ac {
                 let res = query(nx, ny, POWER, bedrock);
                 if res == RockState::Broken {
                     is_broken_tmp = true;
@@ -344,11 +374,64 @@ fn dfs(
             }
             // もし壊れたら先に進む
             if is_broken_tmp {
+                // すでに近くに壊れた岩盤があるなら、そこにつなげる
+                for di in 0..BROKEN_AC {
+                    for dx in -BROKEN_AC..BROKEN_AC {
+                        for dy in -BROKEN_AC..BROKEN_AC {
+                            if dx.abs() + dy.abs() == 0 {
+                                continue;
+                            }
+                            if dx.abs() + dy.abs() > di {
+                                continue;
+                            }
+                            let nnx = nx + dx;
+                            let nny = ny + dy;
+                            if in_range(nnx, nny) {
+                                if bedrock[nnx as usize][nny as usize].0 == RockState::Broken {
+                                    let new_now = Point::new(nx, ny);
+                                    let new_src = Point::new(nnx, nny);
+                                    // すでに壊れている場所のみをたどって行けるならつなげる
+                                    if dfs(
+                                        new_src,
+                                        Dir::None,
+                                        new_src,
+                                        target,
+                                        0,
+                                        wsrc,
+                                        house,
+                                        bedrock,
+                                        visited,
+                                    ) {
+                                        println!(
+                                            "# Connect: ({}, {}) -> ({}, {})",
+                                            new_now.x, new_now.y, new_src.x, new_src.y
+                                        );
+                                        connect_greedy(
+                                            new_now,
+                                            new_src,
+                                            bedrock,
+                                            RockState::Flowing,
+                                        );
+                                        connect_bfs(src, new_now, bedrock);
+                                        return true;
+                                    } else {
+                                        println!(
+                                            "# Cannot connect: ({}, {}) -> ({}, {})",
+                                            new_now.x, new_now.y, new_src.x, new_src.y
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 let connected = dfs(
                     Point::new(nx, ny),
                     nxt_dir,
                     src,
                     new_target,
+                    break_ac,
                     wsrc,
                     house,
                     bedrock,
@@ -398,8 +481,19 @@ fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
 }
 
 fn main() {
+    // Constants Assertion
+    assert!(
+        DFS_WIDTH > BROKEN_AC,
+        "常に繋げかねないので、DFS_WIDTH > BROKEN_AC"
+    );
+    assert!(
+        FLOWING_AC > BROKEN_AC,
+        "処理が変になるので、FLOWING_AC > BROKEN_AC"
+    );
+
     let (n, w, k, _c, wsrc, house) = input();
 
+    // (RockState, i32): (岩盤状態, 何回掘ったか)
     let mut bedrock = vec![vec![(RockState::None, 0); n as usize]; n as usize];
 
     // 近い順にソート
@@ -443,6 +537,7 @@ fn main() {
             Dir::None,
             h,
             nearest,
+            BREAK_AC_INIT,
             &wsrc,
             &house,
             &mut bedrock,
@@ -464,5 +559,5 @@ fn main() {
             pq.push(Reverse((dist, j, w + i)));
         }
     }
-    assert!(false);
+    assert!(false, "全部つながってないよ！");
 }

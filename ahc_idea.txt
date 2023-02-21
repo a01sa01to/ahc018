@@ -101,3 +101,11 @@ Local Score
   Minimum Score: 28800.00 on 20
   Maximum Score: 644096.00 on 29
   Standard Deviation: 97959.55
+
+--- Submission 14 ---
+すでに近くが掘られていた場合、そこからDFSを再開させる -> 6,981,472
+Local Score
+  Average Score: 159702.50
+  Minimum Score: 29808.00 on 20
+  Maximum Score: 637696.00 on 29
+  Standard Deviation: 96135.00
