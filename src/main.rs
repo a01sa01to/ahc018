@@ -155,30 +155,41 @@ fn connect_greedy(
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     nxt_state: RockState,
 ) {
+    // まず src と target を壊す
+    query_until_broken(src.x, src.y, POWER, bedrock, nxt_state);
+    query_until_broken(target.x, target.y, POWER, bedrock, nxt_state);
+
+    let src_num = bedrock[src.x as usize][src.y as usize].1;
+    let target_num = bedrock[target.x as usize][target.y as usize].1;
+
     // 一直線に src から target まで掘る
     let mut x = src.x;
     let mut y = src.y;
     while x != target.x || y != target.y {
+        // もしどっちも1回で壊せていたらパワーを減らしてみる
+        let power = if src_num == target_num && src_num == 1 {
+            POWER / 2
+        } else {
+            POWER
+        };
         if (x - target.x).abs() > (y - target.y).abs() {
             if x < target.x {
-                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                query_until_broken(x, y, power, bedrock, nxt_state);
                 x += 1;
             } else {
-                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                query_until_broken(x, y, power, bedrock, nxt_state);
                 x -= 1;
             }
         } else {
             if y < target.y {
-                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                query_until_broken(x, y, power, bedrock, nxt_state);
                 y += 1;
             } else {
-                query_until_broken(x, y, POWER, bedrock, nxt_state);
+                query_until_broken(x, y, power, bedrock, nxt_state);
                 y -= 1;
             }
         }
     }
-    // target が壊れてない場合もあるので
-    query_until_broken(target.x, target.y, POWER, bedrock, nxt_state);
 }
 
 fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)>>) {
