@@ -157,7 +157,7 @@ fn connect_greedy(
         let power = if src_num == target_num && src_num == 1 {
             POWER / 2
         } else {
-            POWER * (src_num.min(target_num) as u32)
+            POWER
         };
         if (x - target.x).abs() > (y - target.y).abs() {
             if x < target.x {
