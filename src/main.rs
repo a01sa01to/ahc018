@@ -4,7 +4,6 @@ use rand::Rng;
 use std::{
     cmp::Reverse,
     collections::BinaryHeap,
-    fmt::{Debug, Formatter},
     io::{self, Write},
     process,
 };
@@ -48,18 +47,6 @@ impl Point {
     // ユークリッド距離
     fn edist(&self, other: &Point) -> i64 {
         ((self.x - other.x).pow(2) + (self.y - other.y).pow(2)) as i64
-    }
-}
-// println用
-impl Debug for Dir {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Dir::None => write!(f, "None"),
-            Dir::Up => write!(f, "Up"),
-            Dir::Left => write!(f, "Left"),
-            Dir::Down => write!(f, "Down"),
-            Dir::Right => write!(f, "Right"),
-        }
     }
 }
 
@@ -260,10 +247,6 @@ fn dfs(
     // すでに流れている場合はそこからつなげられる
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
         connect_bfs(src, now, bedrock);
-        println!(
-            "# Done: from:({},{}) to:({},{})",
-            src.x, src.y, now.x, now.y
-        );
         return true;
     }
     // 近くまで行ったらつなげる
@@ -291,7 +274,6 @@ fn dfs(
     }
     // 目標地点から離れすぎる場合はやめる
     let rnddst = ((src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt()) / 4.0;
-    println!("# Source: ({}, {}), Target: ({}, {}), Now: ({}, {}), Dist now: {}, Dist target: {}, rnddst: {}, Exp: {}", src.x, src.y, target.x, target.y, now.x, now.y, now.edist(&target), src.edist(&target), rnddst, rnddst.exp());
     if rnddst.exp() < rng.gen::<f64>() {
         return false;
     }
@@ -326,19 +308,6 @@ fn dfs(
             }
         }
     }
-    println!(
-        "# Source: ({}, {}), Now: ({}, {}), Target: ({}, {}), Priority: [{:?}, {:?}, {:?}, {:?}]",
-        src.x,
-        src.y,
-        now.x,
-        now.y,
-        target.x,
-        target.y,
-        priority_dir[0],
-        priority_dir[1],
-        priority_dir[2],
-        priority_dir[3]
-    );
 
     // 今いる場所から一番近い水源を探す
     let mut new_target = wsrc[0];
@@ -355,10 +324,6 @@ fn dfs(
             }
         }
     }
-    println!(
-        "# Prev Target: ({}, {}), New Target: ({}, {})",
-        target.x, target.y, new_target.x, new_target.y
-    );
 
     // DFS
     for dir in 0..4 {
@@ -413,10 +378,6 @@ fn dfs(
                                         bedrock,
                                         visited,
                                     ) {
-                                        println!(
-                                            "# Connect: ({}, {}) -> ({}, {})",
-                                            new_now.x, new_now.y, new_src.x, new_src.y
-                                        );
                                         connect_greedy(
                                             new_now,
                                             new_src,
@@ -425,11 +386,6 @@ fn dfs(
                                         );
                                         connect_bfs(src, new_now, bedrock);
                                         return true;
-                                    } else {
-                                        println!(
-                                            "# Cannot connect: ({}, {}) -> ({}, {})",
-                                            new_now.x, new_now.y, new_src.x, new_src.y
-                                        );
                                     }
                                 }
                             }
