@@ -112,7 +112,7 @@ Local Score
 
 --- Submission 15 ---
 connect_greedy において、src, targetどちらもパワー128の1回で壊せたら、そこをつなげるパワーを半減させる -> 6,223,395
-128で壊せた場合、64で壊せる条件付確率は77%
+128で壊せた場合、64で壊せる条件付確率は77.5%
 Local Score
   Average Score: 144755.85
   Minimum Score: 24400.00 on 20
@@ -126,3 +126,12 @@ Local Score
   Minimum Score: 24400.00 on 20
   Maximum Score: 570112.00 on 29
   Standard Deviation: 93113.78
+
+--- Submission 17 ---
+#16 を Revert。 #15 をさらに半減させて32にしてみる -> 6,054,465
+ちなみに条件付確率は57.2%
+Local Score
+  Average Score: 141432.35
+  Minimum Score: 21260.00 on 89
+  Maximum Score: 613344.00 on 29
+  Standard Deviation: 98135.33

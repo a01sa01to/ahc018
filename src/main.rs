@@ -155,7 +155,7 @@ fn connect_greedy(
     while x != target.x || y != target.y {
         // もしどっちも1回で壊せていたらパワーを減らしてみる
         let power = if src_num == target_num && src_num == 1 {
-            POWER / 2
+            POWER / 4
         } else {
             POWER
         };
