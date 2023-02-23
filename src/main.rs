@@ -197,7 +197,7 @@ fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)
             }
             // 斜めは倍率を高めに設定
             let mag = if DX_8[i].abs() + DY_8[i].abs() > 1 {
-                4
+                3
             } else {
                 1
             };
@@ -503,7 +503,7 @@ fn main() {
             h,
             nearest,
             BREAK_AC_INIT,
-            (house[i as usize].edist(&nearest) as f64 * 2.15).round() as i64,
+            house[i as usize].edist(&nearest) * 2i64,
             &wsrc,
             &house,
             &mut bedrock,
