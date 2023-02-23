@@ -135,3 +135,11 @@ Local Score
   Minimum Score: 21260.00 on 89
   Maximum Score: 613344.00 on 29
   Standard Deviation: 98135.33
+
+--- Submission 18 ---
+近傍に流れているところがあったらそこから流すようにする -> 6,067,567
+Local Score
+  Average Score: 141408.14
+  Minimum Score: 20802.00 on 89
+  Maximum Score: 632128.00 on 29
+  Standard Deviation: 98829.79

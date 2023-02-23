@@ -138,11 +138,48 @@ fn query_until_broken(
 
 fn connect_greedy(
     src: Point,
-    target: Point,
+    base_target: Point,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     nxt_state: RockState,
 ) {
-    // まず src と target を壊す
+    let mut target = base_target;
+    let mut x = src.x;
+    let mut y = src.y;
+
+    // まずルートをチェックして、すでにつながっていないかをチェック
+    while x != base_target.x || y != base_target.y {
+        let mut changed = false;
+        for d in 0..4 as usize {
+            let nx = x + DX[d];
+            let ny = y + DY[d];
+            if in_range(nx, ny) && bedrock[nx as usize][ny as usize].0 == RockState::Flowing {
+                target = Point::new(nx, ny);
+                changed = true;
+                break;
+            }
+        }
+        if changed {
+            break;
+        }
+
+        if (x - base_target.x).abs() > (y - base_target.y).abs() {
+            if x < target.x {
+                x += 1;
+            } else {
+                x -= 1;
+            }
+        } else {
+            if y < base_target.y {
+                y += 1;
+            } else {
+                y -= 1;
+            }
+        }
+    }
+    x = src.x;
+    y = src.y;
+
+    // src と target を壊す
     query_until_broken(src.x, src.y, POWER, bedrock, nxt_state);
     query_until_broken(target.x, target.y, POWER, bedrock, nxt_state);
 
@@ -150,8 +187,6 @@ fn connect_greedy(
     let target_num = bedrock[target.x as usize][target.y as usize].1;
 
     // 一直線に src から target まで掘る
-    let mut x = src.x;
-    let mut y = src.y;
     while x != target.x || y != target.y {
         // もしどっちも1回で壊せていたらパワーを減らしてみる
         let power = if src_num == target_num && src_num == 1 {
