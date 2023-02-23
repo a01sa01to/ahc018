@@ -145,4 +145,12 @@ Local Score
   Standard Deviation: 98829.79
 
 --- Submission 19 ---
-とりあえず Revert 18 -> 6,077,720
+とりあえず Revert 18 しただけ -> 6,077,720
+
+--- Submission 20 ---
+#10 から導入した確率的遷移をやめてみる -> 5,975,229
+Local Score
+  Average Score: 140009.03
+  Minimum Score: 21260.00 on 89
+  Maximum Score: 626016.00 on 29
+  Standard Deviation: 98872.61

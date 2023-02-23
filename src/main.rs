@@ -1,6 +1,3 @@
-extern crate rand;
-
-use rand::Rng;
 use std::{
     cmp::Reverse,
     collections::BinaryHeap,
@@ -236,13 +233,12 @@ fn dfs(
     src: Point,
     target: Point,
     break_ac: i32,
+    upper_dist: i64,
     wsrc: &Vec<Point>,
     house: &Vec<Point>,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     visited: &mut Vec<Vec<bool>>,
 ) -> bool {
-    let mut rng = rand::thread_rng();
-
     visited[now.x as usize][now.y as usize] = true;
     // すでに流れている場合はそこからつなげられる
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
@@ -272,9 +268,9 @@ fn dfs(
             }
         }
     }
+
     // 目標地点から離れすぎる場合はやめる
-    let rnddst = ((src.edist(&target) as f64).sqrt() - (now.edist(&target) as f64).sqrt()) / 4.0;
-    if rnddst.exp() < rng.gen::<f64>() {
+    if now.edist(&target) > upper_dist {
         return false;
     }
     // 方向の優先順位決め
@@ -373,6 +369,7 @@ fn dfs(
                                         new_src,
                                         target,
                                         0,
+                                        upper_dist,
                                         wsrc,
                                         house,
                                         bedrock,
@@ -399,6 +396,7 @@ fn dfs(
                     src,
                     new_target,
                     break_ac,
+                    upper_dist,
                     wsrc,
                     house,
                     bedrock,
@@ -505,6 +503,7 @@ fn main() {
             h,
             nearest,
             BREAK_AC_INIT,
+            house[i as usize].edist(&nearest) * 2i64,
             &wsrc,
             &house,
             &mut bedrock,
