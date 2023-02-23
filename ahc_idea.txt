@@ -143,3 +143,6 @@ Local Score
   Minimum Score: 20802.00 on 89
   Maximum Score: 632128.00 on 29
   Standard Deviation: 98829.79
+
+--- Submission 19 ---
+とりあえず Revert 18 -> 6,077,720
