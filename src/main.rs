@@ -197,7 +197,7 @@ fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)
             }
             // 斜めは倍率を高めに設定
             let mag = if DX_8[i].abs() + DY_8[i].abs() > 1 {
-                3
+                4
             } else {
                 1
             };

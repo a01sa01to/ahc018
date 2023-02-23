@@ -55,7 +55,7 @@ Local Score
   Standard Deviation: 120268.88
 
 --- Submission 8 ---
-DFSの幅を8に変更。探索順序の修正。斜め移動も可能にした -> 8,026,170
+探索順序の修正。斜め移動も可能にした -> 8,026,170
 Local Score
   Average Score: 193473.17
   Minimum Score: 28368.00 on 20
@@ -163,3 +163,11 @@ Local Score
   Minimum Score: 21260.00 on 89
   Maximum Score: 626016.00 on 29
   Standard Deviation: 99142.13
+
+--- Submission 22 ---
+斜め移動にかかるコストを3から4にしてみる -> 6,023,092
+Local Score
+  Average Score: 139093.15
+  Minimum Score: 21260.00 on 89
+  Maximum Score: 626368.00 on 29
+  Standard Deviation: 97518.86
