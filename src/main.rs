@@ -503,7 +503,7 @@ fn main() {
             h,
             nearest,
             BREAK_AC_INIT,
-            house[i as usize].edist(&nearest) * 2i64,
+            (house[i as usize].edist(&nearest) as f64 * 2.15).round() as i64,
             &wsrc,
             &house,
             &mut bedrock,

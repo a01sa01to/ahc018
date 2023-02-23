@@ -154,3 +154,12 @@ Local Score
   Minimum Score: 21260.00 on 89
   Maximum Score: 626016.00 on 29
   Standard Deviation: 98872.61
+
+--- Submission 21 ---
+上限の離れ具合を 2.15 倍としてみる -> 5,983,733
+いろいろ試したらいい感じなのでこの数字。
+Local Score
+  Average Score: 139788.15
+  Minimum Score: 21260.00 on 89
+  Maximum Score: 626016.00 on 29
+  Standard Deviation: 99142.13
