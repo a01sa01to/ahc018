@@ -138,6 +138,7 @@ fn connect_greedy(
     target: Point,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     nxt_state: RockState,
+    c: u32,
 ) {
     // src と target を壊す
     query_until_broken(src.x, src.y, POWER, bedrock, nxt_state);
@@ -151,11 +152,7 @@ fn connect_greedy(
     let mut y = src.y;
     while x != target.x || y != target.y {
         // もしどっちも1回で壊せていたらパワーを減らしてみる
-        let power = if src_num == target_num && src_num == 1 {
-            POWER / 4
-        } else {
-            POWER
-        };
+        let power = ((POWER as f64 * src_num.min(target_num) as f64 * (c as f64 / 32.0 + 1.0) / 4.0).round() as u32).min(5000);
         if (x - target.x).abs() > (y - target.y).abs() {
             if x < target.x {
                 query_until_broken(x, y, power, bedrock, nxt_state);
@@ -176,7 +173,7 @@ fn connect_greedy(
     }
 }
 
-fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)>>) {
+fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)>>, c: u32) {
     // ダイクストラでいい感じにつなげる
     let mut que = BinaryHeap::<Reverse<(i32, Point)>>::new();
     let mut dist = vec![vec![(1e9 as i32, Point::new(-1, -1)); N as usize]; N as usize];
@@ -222,7 +219,7 @@ fn connect_bfs(src: Point, target: Point, bedrock: &mut Vec<Vec<(RockState, i32)
         if prev.x == -1 {
             break;
         }
-        connect_greedy(prev, now, bedrock, RockState::Flowing);
+        connect_greedy(prev, now, bedrock, RockState::Flowing, c);
         now = prev;
     }
 }
@@ -238,17 +235,18 @@ fn dfs(
     house: &Vec<Point>,
     bedrock: &mut Vec<Vec<(RockState, i32)>>,
     visited: &mut Vec<Vec<bool>>,
+    c: u32,
 ) -> bool {
     visited[now.x as usize][now.y as usize] = true;
     // すでに流れている場合はそこからつなげられる
     if bedrock[now.x as usize][now.y as usize].0 == RockState::Flowing {
-        connect_bfs(src, now, bedrock);
+        connect_bfs(src, now, bedrock, c);
         return true;
     }
     // 近くまで行ったらつなげる
     if (now.x - target.x).abs() <= NEAR_AC && (now.y - target.y).abs() <= NEAR_AC {
-        connect_greedy(now, target, bedrock, RockState::Flowing);
-        connect_bfs(src, now, bedrock);
+        connect_greedy(now, target, bedrock, RockState::Flowing, c);
+        connect_bfs(src, now, bedrock, c);
         return true;
     }
     // 近くに水路があればそこからつなげる
@@ -261,8 +259,8 @@ fn dfs(
                 let nx = now.x + dx;
                 let ny = now.y + dy;
                 if in_range(nx, ny) && bedrock[nx as usize][ny as usize].0 == RockState::Flowing {
-                    connect_greedy(now, Point::new(nx, ny), bedrock, RockState::Flowing);
-                    connect_bfs(src, now, bedrock);
+                    connect_greedy(now, Point::new(nx, ny), bedrock, RockState::Flowing, c);
+                    connect_bfs(src, now, bedrock, c);
                     return true;
                 }
             }
@@ -374,14 +372,16 @@ fn dfs(
                                         house,
                                         bedrock,
                                         visited,
+                                        c,
                                     ) {
                                         connect_greedy(
                                             new_now,
                                             new_src,
                                             bedrock,
                                             RockState::Flowing,
+                                            c,
                                         );
-                                        connect_bfs(src, new_now, bedrock);
+                                        connect_bfs(src, new_now, bedrock, c);
                                         return true;
                                     }
                                 }
@@ -401,6 +401,7 @@ fn dfs(
                     house,
                     bedrock,
                     visited,
+                    c,
                 );
                 // つながったらtrue
                 if connected {
@@ -413,7 +414,7 @@ fn dfs(
 }
 
 fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
-    let (n, w, k, _c) = {
+    let (n, w, k, c) = {
         let mut input = String::new();
         io::stdin().read_line(&mut input).unwrap();
         let mut iter = input.split_whitespace().map(|i| i.parse::<u32>().unwrap());
@@ -442,7 +443,7 @@ fn input() -> (u32, u32, u32, u32, Vec<Point>, Vec<Point>) {
             tmp
         })
         .collect();
-    (n, w, k, _c, wsrc, house)
+    (n, w, k, c, wsrc, house)
 }
 
 fn main() {
@@ -456,7 +457,7 @@ fn main() {
         "処理が変になるので、FLOWING_AC > BROKEN_AC"
     );
 
-    let (n, w, k, _c, wsrc, house) = input();
+    let (n, w, k, c, wsrc, house) = input();
 
     // (RockState, i32): (岩盤状態, 何回掘ったか)
     let mut bedrock = vec![vec![(RockState::None, 0); n as usize]; n as usize];
@@ -492,7 +493,7 @@ fn main() {
         };
         // すでに壊れている場合はつなぐ
         if bedrock[h.x as usize][h.y as usize].0 == RockState::Broken {
-            connect_bfs(h, nearest, &mut bedrock);
+            connect_bfs(h, nearest, &mut bedrock, c);
             continue;
         }
         // DFS
@@ -508,6 +509,7 @@ fn main() {
             &house,
             &mut bedrock,
             &mut visited,
+            c,
         ) {
             for i in 0..n {
                 for j in 0..n {

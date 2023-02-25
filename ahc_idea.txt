@@ -174,3 +174,11 @@ Local Score
 
 --- Submission 23 ---
 Revert #21, #22 -> 5,975,229
+
+--- Submission 24 ---
+connect_greedyでつなげるパワーをCに応じて変える -> 5,840,069
+Local Score
+  Average Score: 138793.61
+  Minimum Score: 19992.00 on 89
+  Maximum Score: 601888.00 on 29
+  Standard Deviation: 97207.50
