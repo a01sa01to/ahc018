@@ -182,3 +182,11 @@ Local Score
   Minimum Score: 19992.00 on 89
   Maximum Score: 601888.00 on 29
   Standard Deviation: 97207.50
+
+--- Submission 25 ---
+もし始点と終点が1回で壊せていたら、その間は32で掘る -> 5,707,108
+Local Score
+  Average Score: 135203.44
+  Minimum Score: 19494.00 on 89
+  Maximum Score: 593504.00 on 29
+  Standard Deviation: 95882.96

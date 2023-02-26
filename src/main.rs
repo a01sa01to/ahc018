@@ -152,7 +152,14 @@ fn connect_greedy(
     let mut y = src.y;
     while x != target.x || y != target.y {
         // もしどっちも1回で壊せていたらパワーを減らしてみる
-        let power = ((POWER as f64 * src_num.min(target_num) as f64 * (c as f64 / 32.0 + 1.0) / 4.0).round() as u32).min(5000);
+        let power = if src_num == target_num && target_num == 1 {
+            POWER / 4
+        } else {
+            // Cに応じて変える
+            ((POWER as f64 * src_num.min(target_num) as f64 * (c as f64 / 32.0 + 1.0) / 4.0).round()
+                as u32)
+                .min(5000)
+        };
         if (x - target.x).abs() > (y - target.y).abs() {
             if x < target.x {
                 query_until_broken(x, y, power, bedrock, nxt_state);
