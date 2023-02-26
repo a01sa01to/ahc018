@@ -190,3 +190,11 @@ Local Score
   Minimum Score: 19494.00 on 89
   Maximum Score: 593504.00 on 29
   Standard Deviation: 95882.96
+
+--- Submission 26 ---
+高火力のあとはだんだんパワーを弱めていく -> 5,681,762
+Local Score
+  Average Score: 135087.36
+  Minimum Score: 19494.00 on 89
+  Maximum Score: 590890.00 on 29
+  Standard Deviation: 95777.35

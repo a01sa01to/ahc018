@@ -127,7 +127,17 @@ fn query_until_broken(
     // 再帰する
     let res = query(x, y, p, bedrock);
     if res != RockState::Broken && res != RockState::Flowing {
-        query_until_broken(x, y, p, bedrock, nxt_state);
+        if p < POWER {
+            query_until_broken(x, y, p, bedrock, nxt_state);
+        } else {
+            query_until_broken(
+                x,
+                y,
+                POWER.max((p as f64 / 1.5).round() as u32),
+                bedrock,
+                nxt_state,
+            );
+        }
     } else {
         bedrock[x as usize][y as usize].0 = nxt_state;
     }
